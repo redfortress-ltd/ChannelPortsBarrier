@@ -11,6 +11,7 @@ public class InfoSingleton {
     private static InputStream input = null;
     private static String BarrierType, ServerIP, TrafficIPENT, TrafficIPEXT,EntVid, MoveVid, ExitVid, AlertVid, RegImg, KeyPos, ImagePath, StillCameraUsername, StillCameraPassword, StillCameraURL;
     private static int EntPort, ExtPort, TrafficPortEnt, TrafficPortExt, KeepAlivePort, vidTimer,keyTimer,trafficTimer, anprHttpPort;
+    private static Boolean errorMode;
 
     public InfoSingleton() {
     }
@@ -31,7 +32,8 @@ public class InfoSingleton {
         input = null;
 
         try {
-            String filename = "/Users/nathanapps/Documents/Clients/Channel Ports/CHPBarrierV2/CHPV2SDcard/config.properties";
+            String filename = "/home/pi/CHPBarrier/config.properties";
+            //String filename = "/Users/michaelbrierley/Downloads/garyshare/CHPBarrier/config.properties";
             //String filename = "/home/pi/Desktop/CHPV2SDcard/config.properties";
             //String filename = "/home/pi/CHPV2SDcard/config.properties";
             input = new FileInputStream(filename);
@@ -66,6 +68,7 @@ public class InfoSingleton {
             StillCameraUsername = prop.getProperty("STILL_CAMERA_USERNAME");
             StillCameraPassword = prop.getProperty("STILL_CAMERA_PASSWORD");
             StillCameraURL = prop.getProperty("STILL_CAMERA_URL");
+            errorMode = Boolean.parseBoolean(prop.getProperty("ERROR_MODE"));
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
@@ -105,6 +108,8 @@ public class InfoSingleton {
     public String getServerIP(){
         return ServerIP;
     }
+
+    public Boolean getErrorMode() {return errorMode;}
 
     public String getTrafficIPENT(){
         return TrafficIPENT;

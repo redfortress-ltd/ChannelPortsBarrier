@@ -130,7 +130,6 @@ public class CHPo_Buffer implements Runnable {
     }*/
 
     public boolean sendBuffer() {
-        takePicture();
         connect();
         String finalReg = "";
         String recievedMessage = "";
@@ -150,23 +149,35 @@ public class CHPo_Buffer implements Runnable {
             recievedMessage = this.in.readLine();
             System.out.println("Camera Recieve " + recievedMessage);
             String stillImageName = takePicture();
+
+            if(GateSession.getInstance() != null && GateSession.getInstance().getImageData() != null) {
+                File targetFile = new File(info.getImagePath() + GateSession.getInstance().getAnprImageName());
+                FileUtils.writeByteArrayToFile(targetFile, GateSession.getInstance().getImageData());
+            }
+
             Date date = new Date();
             String modifiedDate = (new SimpleDateFormat("yyyyMMdd")).format(date);
 
             String dataLine = "DATA=" + modifiedDate + "," + (new SimpleDateFormat("HHmmss")).format(date) + "," + finalReg + "\r";
             String anprLine = "ANPR=";
-            if (GateSession.getInstance() != null) {
+
+            if (GateSession.getInstance() != null && !info.getErrorMode()) {
                 anprLine = anprLine + modifiedDate + "," + (new SimpleDateFormat("HHmmss")).format(date) + "," + finalReg + "," + GateSession.getInstance().getRegistration() + "," + GateSession.getInstance().getConfidence() + "," + GateSession.getInstance().getAnprImageName() + "\r";
+            }
+
+            if(info.getErrorMode()) {
+                anprLine = anprLine + modifiedDate + "," + (new SimpleDateFormat("HHmmss")).format(date) + "," + finalReg + ",Error,1,Error.png\r";
             }
             String stillLine = "STIL=" + modifiedDate + "," + (new SimpleDateFormat("HHmmss")).format(date) + "," + finalReg + "," + stillImageName + "\r";
             this.out.printf(dataLine, new Object[0]);
             recievedMessage = this.in.readLine();
-            this.out.printf(anprLine, new Object[0]);
-            recievedMessage = this.in.readLine();
             this.out.printf(stillLine, new Object[0]);
+            recievedMessage = this.in.readLine();
+            this.out.printf(anprLine, new Object[0]);
 
             recievedMessage = this.in.readLine();
             System.out.println("Recieved: " + recievedMessage);
+            GateSession.clearSession();
             //String[] splitMessage = recievedMessage.split(",");
             out.flush();
             if (recievedMessage.equals("MOVE")) {

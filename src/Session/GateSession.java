@@ -8,6 +8,7 @@ public class GateSession implements Serializable {
     private String anprImageName;
     private String registration;
     private String confidence;
+    private byte[] imageData;
 
     public static GateSession getInstance() {
         if (uniqInstance == null) {
@@ -17,14 +18,25 @@ public class GateSession implements Serializable {
     }
 
 
-    public static void createSession(String anprImageName, String registration, String confidence) {
+    public static void createSession(String anprImageName, String registration, String confidence, byte[] imageData) {
         synchronized (uniqInstance) {
             uniqInstance = new GateSession();
             uniqInstance.setAnprImageName(anprImageName);
             uniqInstance.setConfidence(confidence);
             uniqInstance.setRegistration(registration);
+            uniqInstance.setImageData(imageData);
         }
     }
+
+    public static void clearSession() {
+        synchronized (uniqInstance) {
+            uniqInstance.setAnprImageName(null);
+            uniqInstance.setConfidence(null);
+            uniqInstance.setRegistration(null);
+            uniqInstance.setImageData(null);
+        }
+    }
+
     public String getAnprImageName() { return this.anprImageName; }
 
 
@@ -46,4 +58,12 @@ public class GateSession implements Serializable {
 
 
     public void setConfidence(String confidence) { this.confidence = confidence; }
+
+    public byte[] getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
+    }
 }
